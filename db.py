@@ -16,7 +16,7 @@ def obtenerFullUsuarios():
 
 
 def registrarUsuario(nombre, apellido, email, password):
-	conexion = psycopg2.connect(os.getenv('EXTERNAL_DB_URL'))
+	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
 	query = "INSERT INTO usuarios (nombre,apellido,email,password) VALUES (%s,%s,%s,%s)"
 
