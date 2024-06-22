@@ -1,0 +1,6 @@
+flask
+jwt
+bcrypt
+psycopg2
+python-dotenv
+gunicorn
