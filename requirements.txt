@@ -1,5 +1,5 @@
 flask
-jwt
+pyjwt
 bcrypt
 psycopg2
 python-dotenv
