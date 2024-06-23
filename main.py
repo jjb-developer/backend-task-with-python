@@ -36,9 +36,9 @@ def create_app():
 					"email": request.json.get('email'),
 					"exp": datetime.now() + timedelta(hours=7)
 				}
-				token = auth.generateToken(payload)
-				return jsonify({"status": 200, "token": token.decode('utf-8')})
-				#return jsonify({"status": 200, "token": str(token,'utf-8')})
+				#token = auth.generateToken(payload).decode() # developer
+				token = auth.generateToken(payload) # production
+				return jsonify({"status": 200, "token": token})
 			else:
 				return jsonify({"message": "credenciales incorrectas."})
 		except Exception as error:
