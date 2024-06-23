@@ -30,15 +30,20 @@ def create_app():
 	@app.route("/login", methods=['POST'])
 	def authUser():
 		responseDB = db.autenticacionUsuario(request.json.get('email'),request.json.get('password'))
-		if responseDB:
-			payload = {
-				"email": request.json.get('email'),
-				"exp": datetime.now() + timedelta(hours=7)
-			}
-			token = auth.generateToken(payload)
-			return jsonify({"status": 200, "token": token.decode('utf-8')})
-		else:
-			return jsonify({"message": "credenciales incorrectas."})
+		try:
+			if responseDB:
+				payload = {
+					"email": request.json.get('email'),
+					"exp": datetime.now() + timedelta(hours=7)
+				}
+				token = auth.generateToken(payload)
+				print(token)
+				#return jsonify({"status": 200, "token": token.decode('utf-8')})
+				return jsonify({"status": 200, "token": str(token,'utf-8')})
+			else:
+				return jsonify({"message": "credenciales incorrectas."})
+		except Exception as error:
+			return jsonify({"error": str(error)})
 
 
 
@@ -51,4 +56,4 @@ def create_app():
 
 if __name__ == "__main__":
 	app = create_app()
-	app.run()
+	app.run(debug=True, port=8080)
