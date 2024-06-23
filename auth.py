@@ -11,7 +11,7 @@ def generateToken(payload):
 
 def validedToken(token):
 	try:
-		payload_token = jwt.decode(token, os.getenv("SECRET_KEY"), algorithm="HS256")
+		payload_token = jwt.decode(token.encode('utf-8'), os.getenv("SECRET_KEY"), algorithm="HS256")
 		return payload_token
 	except:
 		return False
