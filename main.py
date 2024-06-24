@@ -33,7 +33,7 @@ def create_app():
 		responseDB = db.autenticacionUsuario(request.json.get('email'),request.json.get('password'))
 		try:
 			if responseDB:
-				token = create_access_token(identity=username, expires_delta=timedelta(minutes=30))
+				token = create_access_token(identity=request.json.get('email'), expires_delta=timedelta(minutes=30))
 				return jsonify({"status": 200, "token": str(token,'utf-8')})
 				#return jsonify(access_token=access_token), 200
 			else:
