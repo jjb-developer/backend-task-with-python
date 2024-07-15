@@ -1,3 +1,6 @@
 /__pycache__/*
 .env
 test.py
+auth.py
+utils.py
+respaldo.md
