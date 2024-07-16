@@ -43,8 +43,8 @@ def create_app():
 		try:
 			if is_valid_credenciales:
 				token = create_access_token(identity=id_user, additional_claims={"username": username}, expires_delta=timedelta(minutes=60))
-				#return jsonify({"status": 200, "token": str(token,'utf-8'), "username": username}) # DEV
-				return jsonify({"status": 200, "token": token, "username": username}) # PRODUCTION
+				return jsonify({"status": 200, "token": str(token,'utf-8'), "username": username}) # DEV
+				#return jsonify({"status": 200, "token": token, "username": username}) # PRODUCTION
 			else:
 				return jsonify({"message": "Error en username o password."})
 		except Exception as error:
