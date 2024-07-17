@@ -2,6 +2,9 @@ import psycopg2
 import bcrypt
 import os
 
+
+
+
 def register_user(user):
 	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
@@ -10,7 +13,7 @@ def register_user(user):
 	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
 	password_encrypted = bcrypt.hashpw(user['password'].encode(), salt).decode('utf-8')
 
-	cursor.execute(query, (user['nombre'], user['apellido'], user['email'], user['password'], user['username']))
+	cursor.execute(query, (user['nombre'], user['apellido'], user['email'], password_encrypted, user['username']))
 	conexion.commit()
 	conexion.close()
 	return {'code': 200}
@@ -22,13 +25,12 @@ def autentication_user(username, password):
 	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
 
-	#salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
-	#password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8') #[:50]
+	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
+	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8') #[:50]
 
-	#query = "SELECT id_colaborador FROM colaboradores WHERE username='{}' and password='{}'".format(username,password_encrypted)
 	try:
 		query = "SELECT id_user, username FROM users WHERE username=%s and password=%s"
-		cursor.execute(query,(username,password))
+		cursor.execute(query,(username,password_encrypted))
 		row = list(cursor.fetchall()[0])
 		conexion.close()
 		if len(row) > 0:
@@ -56,55 +58,3 @@ def get_info(id_user):
 			"color": user[5],
 			"priority": user[6]
 	}, row))
-
-
-
-
-
-def create_info(id_user,info):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	query = "INSERT INTO info (id_user,category,title,details,color,priority) VALUES (%s,%s,%s,%s,%s,%s)"
-	try:
-		cursor.execute(query, (id_user,info['category'],info['title'],info['details'],info['color'],info['priority']))
-		conexion.commit()
-		conexion.close()
-		return 201
-	except Exception as e:
-		conexion.close()
-		return 401
-
-
-
-
-
-def update_info(id_user,info):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	query = "UPDATE info SET category=%s, title=%s, details=%s WHERE id_info=%s AND id_user=%s"
-	try:
-		cursor.execute(query, (info['category'],info['title'],info['details'],info['id_info'],id_user))
-		conexion.commit()
-		conexion.close()
-		return 201
-	except Exception as e:
-		conexion.close()
-		return 401
-
-
-
-
-
-def delete_info(id_info,id_user):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	query = "DELETE FROM info WHERE id_info=%s AND id_user=%s"
-	try:
-		cursor.execute(query, (id_info,id_user))
-		conexion.commit()
-		conexion.close()
-		return 201
-	except Exception as e:
-		conexion.close()
-		return 401
-
