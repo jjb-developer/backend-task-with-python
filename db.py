@@ -2,59 +2,61 @@ import psycopg2
 import bcrypt
 import os
 
+def registrarUsuario(url,user):
+	pass
 
 
-
-def register_user(user):
+def obtenerFullUsuarios():
 	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
-	query = "INSERT INTO users (name, lastname, email, password, username) VALUES (%s,%s,%s,%s,%s)"
+	cursor.execute("SELECT * FROM usuarios")
+	users = cursor.fetchall()
+	conexion.close()
+	return users
+
+
+def registrarUsuario(nombre, apellido, email, password):
+	conexion = psycopg2.connect(os.getenv('DB_URL'))
+	cursor = conexion.cursor()
+	query = "INSERT INTO usuarios (nombre,apellido,email,password) VALUES (%s,%s,%s,%s)"
 
 	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
-	password_encrypted = bcrypt.hashpw(user['password'].encode(), salt).decode('utf-8')
+	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')
 
-	cursor.execute(query, (user['nombre'], user['apellido'], user['email'], password_encrypted, user['username']))
+	cursor.execute(query, (nombre, apellido, email, password_encrypted[:50]))
 	conexion.commit()
 	conexion.close()
-	return {'code': 200}
+	return "Usuario regsitrado exitosamente."
 
 
-
-
-def autentication_user(username, password):
+def autenticacionUsuario(email, password):
 	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
 
 	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
-	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8') #[:50]
+	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')[:50]
 
-	try:
-		query = "SELECT id_user, username FROM users WHERE username=%s and password=%s"
-		cursor.execute(query,(username,password_encrypted))
-		row = list(cursor.fetchall()[0])
-		conexion.close()
-		if len(row) > 0:
-			return True, row[0], row[1]
-	except Exception as error:
-		return False, None, None
-
+	query = "SELECT * FROM usuarios WHERE email='{}' and password='{}'".format(email,password_encrypted)
+	cursor.execute(query)
+	row = cursor.fetchall()
+	conexion.close()
+	if len(row) > 0:
+		return True
+	else:
+		return False
 
 
-
-def get_info(id_user):
+def informacionUsuario(email):
 	conexion = psycopg2.connect(os.getenv('DB_URL'))
 	cursor = conexion.cursor()
-	query = "SELECT id_info, category, title, details, created_at, color, priority FROM info WHERE id_user=%s"
-	cursor.execute(query,(id_user,))
+	query = "SELECT * FROM usuarios WHERE email='{}'".format(email)
+	cursor.execute(query)
 	row = cursor.fetchall()
 	conexion.close()
 
 	return list(map(lambda user: {
-			"id_info": user[0],
-			"category": user[1],
-			"title": user[2],
-			"details": user[3],
-			"created_at": user[4],
-			"color": user[5],
-			"priority": user[6]
+			"id": user[0],
+			"nombre": user[1],
+			"apellido": user[2],
+			"email": user[3]
 	}, row))
