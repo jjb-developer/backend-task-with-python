@@ -5,7 +5,10 @@ import db
 from dotenv import load_dotenv
 from os import getenv
 
+
+
 def create_app():
+
 	app = Flask(__name__)
 	app.config["JWT_SECRET_KEY"] = getenv('SECRET_KEY')
 	jwt = JWTManager(app)
@@ -32,6 +35,7 @@ def create_app():
 	@app.route("/register", methods=['POST'])
 	def register_user():
 		return jsonify({"message": "Te has registrado exitosamente. [POST]"})
+
 
 	return app
 
