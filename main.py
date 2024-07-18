@@ -39,7 +39,7 @@ def create_app():
 
 		if status == 201:
 			token = create_access_token(identity=response, expires_delta=timedelta(minutes=30))
-			return jsonify({"status": status, "token": str(token,'utf-8'), "username": "lionel"})
+			return jsonify({"status": status, "token": str(token), "username": "lionel"})
 		else:
 			return jsonify({"message": response, "status": status})
 
