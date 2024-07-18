@@ -16,8 +16,8 @@ def create_app():
 		return jsonify({"message": "Bienvenido a Flask"})
 
 
-	@app.route("/index", methods=['GET'])
-	@jwt_required()
+	#@jwt_required()
+	@app.route("/info", methods=['GET'])
 	def info_user():
 		return jsonify({"message": "Hemos enviado toda la informacion. [GET]"})
 
@@ -35,6 +35,9 @@ def create_app():
 
 	return app
 
+
+"""
 if __name__ == "__main__":
 	app = create_app()
 	app.run(debug=True, port=8080)
+"""
