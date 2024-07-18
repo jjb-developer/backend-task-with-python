@@ -3,4 +3,4 @@ flask_jwt_extended==4.1.0
 bcrypt
 psycopg2
 python-dotenv
-gunicorn
+gunicorn==19.9.0
