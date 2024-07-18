@@ -2,61 +2,64 @@ import psycopg2
 import bcrypt
 import os
 
-def registrarUsuario(url,user):
-	pass
 
 
-def obtenerFullUsuarios():
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	cursor.execute("SELECT * FROM usuarios")
-	users = cursor.fetchall()
-	conexion.close()
-	return users
+def register(user):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
+
+		query = "INSERT INTO users (name,lastname,email,username,password) VALUES (%s,%s,%s,%s,%s)"
+
+		salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
+		password_encrypted = bcrypt.hashpw(user['password'].encode(), salt).decode('utf-8')
+
+		cursor.execute(query, (user['nombre'],user['apellido'],user['email'],user['username'],password_encrypted))
+		conexion.commit()
+		conexion.close()
+		return "El usuario fue registrado exisotsamente.", 201
+	except Exception as error:
+		return str(error), 401
+
+	
 
 
-def registrarUsuario(nombre, apellido, email, password):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	query = "INSERT INTO usuarios (nombre,apellido,email,password) VALUES (%s,%s,%s,%s)"
+def login(username,password):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
 
-	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
-	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')
+		query = "SELECT id_user FROM users WHERE username=%s and password=%s"
 
-	cursor.execute(query, (nombre, apellido, email, password_encrypted[:50]))
-	conexion.commit()
-	conexion.close()
-	return "Usuario regsitrado exitosamente."
+		salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
+		password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')
 
-
-def autenticacionUsuario(email, password):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-
-	salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
-	password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')[:50]
-
-	query = "SELECT * FROM usuarios WHERE email='{}' and password='{}'".format(email,password_encrypted)
-	cursor.execute(query)
-	row = cursor.fetchall()
-	conexion.close()
-	if len(row) > 0:
-		return True
-	else:
-		return False
+		cursor.execute(query,(username,password_encrypted))
+		row = cursor.fetchall()
+		conexion.close()
+		return row[0][0], 201
+	except Exception as error:
+		return str(error), 401
 
 
-def informacionUsuario(email):
-	conexion = psycopg2.connect(os.getenv('DB_URL'))
-	cursor = conexion.cursor()
-	query = "SELECT * FROM usuarios WHERE email='{}'".format(email)
-	cursor.execute(query)
-	row = cursor.fetchall()
-	conexion.close()
 
-	return list(map(lambda user: {
-			"id": user[0],
-			"nombre": user[1],
-			"apellido": user[2],
-			"email": user[3]
-	}, row))
+
+def information(id_user):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
+		query = "SELECT id_info,category,title,details,created_at,color,priority FROM info WHERE id_user=%s"
+		cursor.execute(query,(id_user,))
+		row = cursor.fetchall()
+		conexion.close()
+		return list(map(lambda user: {
+				"id_info": user[0],
+				"category": user[1],
+				"title": user[2],
+				"details": user[3],
+				"created_at": user[4],
+				"color": user[5],
+				"priority": user[6]
+		}, row)), 201
+	except Exception as error:
+		return str(error), 401
