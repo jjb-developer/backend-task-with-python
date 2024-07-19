@@ -21,7 +21,7 @@ def create_app():
 
 	@app.route("/", methods=['GET'])
 	def home():
-		return jsonify({"message": "Bienvenidos a Flask." })
+		return jsonify({"message": "Bienvenidos a Flask [Local]." })
 
 
 
@@ -39,7 +39,8 @@ def create_app():
 
 		if status == 201:
 			token = create_access_token(identity=response, expires_delta=timedelta(minutes=30))
-			return jsonify({"status": status, "token": str(token), "username": "lionel"})
+			return jsonify({"status": status, "token": str(token), "username": "lionel"}) # PRODUCTION
+			#return jsonify({"status": status, "token": str(token,'UTF-8'), "username": "lionel"}) # DEVELOPER
 		else:
 			return jsonify({"message": response, "status": status})
 
@@ -48,10 +49,50 @@ def create_app():
 
 	@app.route("/info", methods=['GET'])
 	@jwt_required()
-	def information():
+	def informationRead():
 		id_user = get_jwt_identity()
 		if id_user:
 			response, status = db.information(id_user)
+			if status == 201:
+				return jsonify({"response": response, "status": status})
+			else:
+				return jsonify({"response": response, "status": status})
+
+
+
+	@app.route("/info", methods=['POST'])
+	@jwt_required()
+	def informationCreate():
+		id_user = get_jwt_identity()
+		if id_user:
+			response, status = db.create(id_user,request.json)
+			if status == 201:
+				return jsonify({"response": response, "status": status})
+			else:
+				return jsonify({"response": response, "status": status})
+
+
+
+	@app.route("/info", methods=['PUT'])
+	@jwt_required()
+	def informationUpdate():
+		id_user = get_jwt_identity()
+		if id_user:
+			response, status = db.update(id_user,request.json)
+			if status == 201:
+				return jsonify({"response": response, "status": status})
+			else:
+				return jsonify({"response": response, "status": status})
+
+
+
+
+	@app.route("/info", methods=['DELETE'])
+	@jwt_required()
+	def informationDelete():
+		id_user = get_jwt_identity()
+		if id_user:
+			response, status = db.delete(id_user,request.json.get('id_info'))
 			if status == 201:
 				return jsonify({"response": response, "status": status})
 			else:

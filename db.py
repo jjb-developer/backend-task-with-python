@@ -63,3 +63,47 @@ def information(id_user):
 		}, row)), 201
 	except Exception as error:
 		return str(error), 401
+
+
+
+
+def create(id_user,info):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
+		query = "INSERT INTO info (id_user,category,title,details,color,priority) VALUES (%s,%s,%s,%s,%s,%s)"
+		cursor.execute(query,(id_user,info['category'],info['title'],info['details'],info['color'],info['priority']))
+		conexion.commit()
+		conexion.close()
+		return "Se ha registrado la informacion exisotsamente.", 201
+	except Exception as error:
+		return str(error), 401
+
+
+
+def update(id_user,info):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
+		query = "UPDATE info SET category=%s, title=%s, details=%s, color=%s, priority=%s WHERE id_info=%s AND id_user=%s"
+		cursor.execute(query,(info['category'],info['title'],info['details'],info['color'],info['priority'],info['id_info'],id_user))
+		conexion.commit()
+		conexion.close()
+		return "Se ha actualizado la informacion exisotsamente.", 201
+	except Exception as error:
+		return str(error), 401
+
+
+
+
+def delete(id_user,id_info):
+	try:
+		conexion = psycopg2.connect(os.getenv('DB_URL'))
+		cursor = conexion.cursor()
+		query = "DELETE FROM info WHERE id_info=%s AND id_user=%s"
+		cursor.execute(query,(id_info,id_user))
+		conexion.commit()
+		conexion.close()
+		return "Se eliminado la informacion exisotsamente.", 201
+	except Exception as error:
+		return str(error), 401
