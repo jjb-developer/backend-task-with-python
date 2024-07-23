@@ -21,7 +21,7 @@ def create_app():
 
 	@app.route("/", methods=['GET'])
 	def home():
-		return jsonify({"message": "Bienvenidos a Flask [Local]." })
+		return jsonify({"message": "Bienvenido a Ideaspace :D" })
 
 
 
@@ -38,9 +38,9 @@ def create_app():
 		response, status = db.login(request.json.get('username'),request.json.get('password'))
 
 		if status == 201:
-			token = create_access_token(identity=response, expires_delta=timedelta(minutes=30))
+			token = create_access_token(identity=response['id_user'], expires_delta=timedelta(minutes=30))
 			return jsonify({"status": status, "token": str(token), "username": "lionel"}) # PRODUCTION
-			#return jsonify({"status": status, "token": str(token,'UTF-8'), "username": "lionel"}) # DEVELOPER
+			#return jsonify({"status": status, "ideaspace": {"token": str(token,'UTF-8'), "user": response['name_completed']}}) # DEVELOPER
 		else:
 			return jsonify({"message": response, "status": status})
 
@@ -105,6 +105,6 @@ def create_app():
 
 
 
-if __name__ == "__main__":
-	app = create_app()
-	app.run(debug=True, port=8000)
+#if __name__ == "__main__":
+#	app = create_app()
+#	app.run(debug=True, port=8000)

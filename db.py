@@ -29,7 +29,7 @@ def login(username,password):
 		conexion = psycopg2.connect(os.getenv('DB_URL'))
 		cursor = conexion.cursor()
 
-		query = "SELECT id_user FROM users WHERE username=%s and password=%s"
+		query = "SELECT id_user, name || ' ' || lastname AS name_complete FROM users WHERE username=%s and password=%s"
 
 		salt = b'$2b$12$GDieQzheal5usWG8OAYziO'
 		password_encrypted = bcrypt.hashpw(password.encode(), salt).decode('utf-8')
@@ -37,7 +37,7 @@ def login(username,password):
 		cursor.execute(query,(username,password_encrypted))
 		row = cursor.fetchall()
 		conexion.close()
-		return row[0][0], 201
+		return {"id_user": row[0][0], "name_completed": row[0][1]}, 201
 	except Exception as error:
 		return str(error), 401
 
