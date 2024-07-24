@@ -40,7 +40,7 @@ def create_app():
 
 		if status == 201:
 			token = create_access_token(identity=response['id_user'], expires_delta=timedelta(minutes=30))
-			return jsonify({"status": status, "token": str(token), "username": "lionel"}) # PRODUCTION
+			return jsonify({"status": status, "ideaspace": {"token": str(token), "user": response['name_completed']}}) # PRODUCTION
 			#return jsonify({"status": status, "ideaspace": {"token": str(token,'UTF-8'), "user": response['name_completed']}}) # DEVELOPER
 		else:
 			return jsonify({"message": response, "status": status})
